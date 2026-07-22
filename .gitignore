@@ -32,3 +32,7 @@ dist/
 tmp/
 *.tmp
 *.log
+
+.devcontainer
+
+cc_install.sh
