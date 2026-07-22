@@ -11,7 +11,7 @@ chk1 = symchk(A1)
 
 # Test 2: Matrix square, but not symmetric
 
-A = randn(5,5);
+A = randn(5,5)
 
 # Test 3: Symmetric matrix, default tolerance
 

@@ -50,6 +50,55 @@ Equivalent conditions:
 - $Ax = 0$ has a nonzero solution $x \neq 0$.
 - The columns of $A$ are linearly dependent.
 
+## Determinant Rules
+
+For square matrices $A,B \in \mathbb{R}^{n \times n}$,
+
+$$
+\det(AB) = \det(A)\det(B).
+$$
+
+Useful consequences:
+
+- $\det(A^T) = \det(A)$.
+- If $\lambda_1, \ldots, \lambda_n$ are the eigenvalues of $A$, counted
+  with algebraic multiplicity, then
+  $$
+  \det(A) = \lambda_1\lambda_2\cdots\lambda_n.
+  $$
+- If $A$ is nonsingular, then
+  $$
+  \det(A^{-1}) = \frac{1}{\det(A)}.
+  $$
+- $\det(A^k) = \det(A)^k$.
+- $AB$ is nonsingular iff both $A$ and $B$ are nonsingular.
+
+For a Cholesky factorisation
+
+$$
+K = R^T R,
+$$
+
+we get
+
+$$
+\det(K)
+= \det(R^T)\det(R)
+= \det(R)^2.
+$$
+
+Since $R$ is triangular,
+
+$$
+\det(R) = \prod_i r_{ii},
+$$
+
+so
+
+$$
+\det(K) = \left(\prod_i r_{ii}\right)^2.
+$$
+
 ## Positive Semidefinite Matrices
 
 A real symmetric matrix $A$ is **positive semidefinite** if
@@ -76,5 +125,3 @@ is always symmetric positive semidefinite, since
 $$
 x^T A^T A x = (Ax)^T(Ax) = \|Ax\|_2^2 \geq 0.
 $$
-
-
