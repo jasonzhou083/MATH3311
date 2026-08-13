@@ -11,7 +11,7 @@ from reportlab.lib.pagesizes import A4, landscape
 from reportlab.lib.styles import ParagraphStyle
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.platypus import BaseDocTemplate, Frame, FrameBreak, PageTemplate, Paragraph, Spacer
+from reportlab.platypus import BaseDocTemplate, Frame, FrameBreak, Image as RLImage, PageTemplate, Paragraph, Spacer
 from pypdf import PdfReader, PdfWriter
 
 
@@ -154,6 +154,8 @@ TEX = {
     "mc": r"E_N[f]=\frac{1}{N}\sum_{i=1}^{N}f(x_i)",
     "mc_error": r"e_N[f]=\frac{\sigma[f]}{\sqrt{N}}=O(N^{-1/2})",
     "mc_target": r"e_N[f]\leq\mathrm{tol}\quad\Longrightarrow\quad N\geq\left(\frac{\sigma[f]}{\mathrm{tol}}\right)^2",
+    "mc_expectation": r"E[f]=\int_{R^d}f(x)p(x)\,dx,\qquad x_i\overset{\mathrm{iid}}{\sim}p",
+    "qmc_estimator": r"Q_N=\frac{1}{N}\sum_{j=1}^{N}f(x_j),\qquad x_j\in[0,1]^d",
     "importance": r"q(x)=g(x)p(x),\qquad E[f]\approx\frac{1}{N}\sum_{i=1}^{N}\frac{f(y_i)}{g(y_i)},\quad y_i\sim q",
     "kh": r"\left|\int_{[0,1]^d}f-Q_N\right|\leq V(f)D_N^*",
     "discrepancy": r"D_N^*=\sup_{y\in[0,1]^d}\left|\prod_{i=1}^{d}y_i-\frac{\#\{x_j\in[0,y)\}}{N}\right|,\qquad D_N^*\leq C\frac{(\log N)^d}{N}",
@@ -233,8 +235,8 @@ FORMULA_KEYS = {
 }
 
 
-def equation(key: str) -> str:
-    """Render a compact TeX-style equation and return Paragraph inline-image markup."""
+def equation_asset(key: str):
+    """Render a compact TeX-style equation and return its asset and dimensions."""
     MATH_DIR.mkdir(parents=True, exist_ok=True)
     tex = TEX[key]
     math_color = "#0B5FA5"
@@ -272,7 +274,23 @@ def equation(key: str) -> str:
         scale = max_width / width_pt
         width_pt *= scale
         height_pt *= scale
+    return path, width_pt, height_pt
+
+
+def equation(key: str) -> str:
+    """Return Paragraph markup for a compact inline TeX-style equation."""
+    path, width_pt, height_pt = equation_asset(key)
     return f'<img src="{path}" width="{width_pt:.2f}" height="{height_pt:.2f}" valign="middle"/>'
+
+
+def equation_block(key: str):
+    """Return a measured standalone equation block that cannot overlap text."""
+    path, width_pt, height_pt = equation_asset(key)
+    flowable = RLImage(str(path), width=width_pt, height=height_pt)
+    flowable.hAlign = "LEFT"
+    flowable.spaceBefore = 0.8
+    flowable.spaceAfter = 2.2
+    return flowable
 
 
 def styles(font_size: float):
@@ -340,6 +358,8 @@ def topic(num: str, title: str, blocks, S):
     for kind, text in blocks:
         if kind == "sub":
             out.append(Paragraph(text, sub))
+        elif kind == "math":
+            out.append(equation_block(text))
         else:
             out.append(Paragraph(text, body))
     return out
@@ -447,11 +467,22 @@ def back_columns(S):
     c3 = []
     c3 += topic("9", "RANDOM NUMBERS & SIMULATION — MC/QMC", [
         ("sub", "Monte Carlo"),
-        ("body", f"For X∈ℝᵈ with PDF p: E[f]=∫f(x)p(x)dx. With iid samples xᵢ~p, {B('E<sub>N</sub>[f]=(1/N)Σᵢf(xᵢ)')}; unbiased. RMS error {B('e<sub>N</sub>[f]=σ[f]/√N=O(N⁻¹ᐟ²)')}, independent of d. {equation('mc_target')}. {R('Require independent samples and finite Var[f].')}"),
+        ("math", "mc_expectation"),
+        ("math", "mc"),
+        ("body", "Estimator is unbiased; RMS error is independent of d."),
+        ("math", "mc_error"),
+        ("math", "mc_target"),
+        ("body", f"{R('Require independent samples and finite Var[f].')}"),
         ("sub", "Variance reduction"),
         ("body", f"Control variate: known μ<sub>g</sub>=E[g], estimate E[f−g]+μ<sub>g</sub>; useful when Var(f−g)≪Var(f).<br/>Antithetic pairs: {R('N even')}; on symmetric ℝᵈ pair x and −x; on [0,1]ᵈ pair x and 1−x. Odd component integrates exactly.<br/>Importance sampling: {equation('importance')}. {R('Require q≥0, ∫q=1, and g(x)≠0 wherever f(x)≠0; finite variance of f/g under q.')}"),
         ("sub", "Quasi-Monte Carlo"),
-        ("body", f"Deterministic xⱼ∈[0,1]ᵈ: Q<sub>N</sub>=(1/N)Σf(xⱼ). Koksma–Hlawka: {B('|∫f−Q<sub>N</sub>|≤V(f)D<sub>N</sub>*')}. {R('Requires bounded variation V(f).')} {equation('discrepancy')}; C depends on d."),
+        ("body", "Deterministic points:"),
+        ("math", "qmc_estimator"),
+        ("body", "Koksma–Hlawka:"),
+        ("math", "kh"),
+        ("body", f"{R('Requires bounded variation V(f).')} Star discrepancy:"),
+        ("math", "discrepancy"),
+        ("body", "Constant C depends on d."),
     ], S)
     c3 += topic("10", "STOCHASTIC INTEGRATION & SDEs — FOUNDATIONS", [
         ("sub", "Random walk / Wiener process"),
