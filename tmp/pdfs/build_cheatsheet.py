@@ -145,7 +145,7 @@ TEX = {
     "simpson_error": r"|E_N^{\mathrm{S}}|\leq\frac{(b-a)\max|f^{(4)}|h^4}{2880}",
     "error_rate": r"|E_{2N}|\approx\frac{|E_N|}{2^r},\qquad r\approx\log_2\!\left(\frac{|E_N|}{|E_{2N}|}\right)",
     "gauss_degree": r"2N-1",
-    "gauss_map": r"\int_a^bf(x)\,dx\approx\frac{b-a}{2}\sum_iw_i f\!\left(\frac{a+b}{2}+\frac{b-a}{2}\xi_i\right)",
+    "gauss_map": r"\int_a^bf(x)\,dx\approx\frac{b-a}{2}\sum_{i=1}^{N}w_i f\!\left(\frac{a+b}{2}+\frac{b-a}{2}\xi_i\right)",
     "gauss_nodes": r"N=2:\ \xi=\pm\frac{1}{\sqrt{3}},\ w=1;\qquad N=3:\ \xi=0,\pm\sqrt{\frac{3}{5}},\ w=\frac{8}{9},\frac{5}{9},\frac{5}{9}",
     "tensor": r"\int_{[0,1]^2}f(x,y)\,dx\,dy\approx\sum_{i,j}w_iw_jf(\xi_i,\xi_j)",
     "uniform_dist": r"X\sim U[a,b]:\quad p(x)=\frac{1}{b-a},\quad E[X]=\frac{a+b}{2},\quad\operatorname{Var}(X)=\frac{(b-a)^2}{12}",
@@ -486,7 +486,7 @@ def back_columns(S):
     ], S)
     c3 += topic("10", "STOCHASTIC INTEGRATION & SDEs — FOUNDATIONS", [
         ("sub", "Random walk / Wiener process"),
-        ("body", f"tₙ=nΔt, Δt=T/N: {equation('random_walk')}; iid Zₙ~N(0,1). Finite nonzero limit requires {B('γ=1/2')}. {equation('stock_step')}.<br/>Wiener W: W(0)=0; a.s. continuous paths; disjoint increments independent; {equation('wiener')}."),
+        ("body", f"tₙ=nΔt, Δt=T/N: {equation('random_walk')}; iid Zₙ~N(0,1). Finite nonzero limit requires {B('γ=1/2')}. {equation('stock_step')}.<br/>Wiener W: W(0)=0; a.s. continuous paths; increments over non-overlapping intervals are independent: for a&lt;b≤c&lt;d, W(b)−W(a) is independent of W(d)−W(c); {equation('wiener')}."),
         ("sub", "Itô integral / lemma"),
         ("body", f"{B('∫₀ᵀf(W(t),t)dW(t)=lim Σf(W(tₙ),tₙ)[W(tₙ₊₁)−W(tₙ)]')} ({R('left endpoints; adapted integrand')}). {equation('ito_qv')}.<br/>{equation('sde')}. For Y=H(X,t): {B('dY=[H<sub>t</sub>+½g²H<sub>xx</sub>]dt+H<sub>x</sub>dX')}. {R('Require H continuously differentiable in t and twice continuously differentiable in x.')}"),
     ], S)
@@ -503,11 +503,11 @@ def back_columns(S):
     c4 += topic("11", "FDMs FOR BLACK–SCHOLES", [
         ("sub", "Grid and differences"),
         ("body", f"Truncate S∈[0,S<sub>max</sub>], {R('S<sub>max</sub>>K and sufficiently large')}. {equation('fd_grid')}.<br/>{equation('fd_space')}; each O((ΔS)²). Time one-sided error O(Δt). Boundary/terminal values from Topic 10."),
-        ("sub", "Backward-time explicit scheme (slides: backward Euler)"),
+        ("sub", "Backward Euler - EXPLICIT scheme"),
         ("body", f"{equation('explicit_coeffs')}. {B('Vⱼ<super>n−1</super>=αⱼVⱼ₋₁ⁿ+βⱼVⱼⁿ+γⱼVⱼ₊₁ⁿ')}. Accuracy O(Δt+(ΔS)²) when stable.<br/>Sufficient stability: {equation('explicit_stability')}; then α,β,γ≥0 and |α|+|β|+|γ|≤1. Under this mesh relation overall order is O((ΔS)²)."),
-        ("sub", "Forward-time implicit scheme (slides: forward Euler)"),
+        ("sub", "Forward Euler - IMPLICIT scheme"),
         ("body", f"{equation('implicit_coeffs')}. Solve tridiagonal {B('αⱼVⱼ₋₁ⁿ+βⱼVⱼⁿ+γⱼVⱼ₊₁ⁿ=Vⱼ<super>n+1</super>')} with boundary terms in RHS, backwards n=N<sub>t</sub>−1,…,0. Accuracy O(Δt+(ΔS)²); unconditionally stable. {R('σ²≥r is sufficient for strict diagonal dominance/nonsingularity, not necessary.')} Factor once if r,σ time-independent; total O(N<sub>t</sub>N<sub>S</sub>)."),
-        ("sub", "Crank–Nicolson and Greeks"),
+        ("sub", "Crank-Nicolson - IMPLICIT scheme; Greeks"),
         ("body", f"At t<sub>n+½</sub>: {equation('cn_average')}; use midpoint value in all S terms. Implicit; accuracy {B('O((Δt)²+(ΔS)²)')}.<br/>{equation('greeks')}."),
     ], S)
     return [c1, c2, c3, c4]
