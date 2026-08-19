@@ -178,7 +178,6 @@ TEX = {
     "log_put_bc": r"U(y,0)=K\max(1-e^y,0),\quad U\sim Ke^{-r\tau}\ (y\to-\infty),\quad U\to0\ (y\to\infty)",
     "explicit": r"V_j^{n-1}=\alpha_jV_{j-1}^n+\beta_jV_j^n+\gamma_jV_{j+1}^n",
     "implicit": r"\alpha_jV_{j-1}^n+\beta_jV_j^n+\gamma_jV_{j+1}^n=V_j^{n+1}",
-    "cn_order": r"O\!\left((\Delta t)^2+(\Delta S)^2\right)",
     "fd_value": r"V_j^n\approx V(S_j,t_n)",
     "fd_time_backward": r"V_t(S_j,t_n)\approx\frac{V_j^n-V_j^{n-1}}{\Delta t}\qquad\mathrm{backward},\ O(\Delta t)",
     "fd_space": r"V_S(S_j,t_n)\approx\frac{V_{j+1}^n-V_{j-1}^n}{2\Delta S},\qquad V_{SS}(S_j,t_n)\approx\frac{V_{j+1}^n-2V_j^n+V_{j-1}^n}{(\Delta S)^2}",
@@ -186,8 +185,6 @@ TEX = {
     "explicit_coeffs": r"\rho=\frac{\Delta t}{2(\Delta S)^2},\quad\alpha_j=(\sigma^2S_j^2-rS_j\Delta S)\rho,\quad\beta_j=1-r\Delta t-2\sigma^2S_j^2\rho,\quad\gamma_j=(\sigma^2S_j^2+rS_j\Delta S)\rho",
     "explicit_stability": r"\sigma^2\geq r,\qquad\frac{\Delta t}{(\Delta S)^2}\leq\min_{1\leq j\leq N_S}\frac{1}{r(\Delta S)^2+\sigma^2S_j^2}",
     "implicit_coeffs": r"\alpha_j=\frac{j\Delta t}{2}(r-\sigma^2j),\quad\beta_j=1+r\Delta t+\frac{\sigma^2S_j^2\Delta t}{(\Delta S)^2},\quad\gamma_j=-\frac{\sigma^2S_j^2\Delta t}{2(\Delta S)^2}-\frac{rS_j\Delta t}{2\Delta S}",
-    "cn_average": r"V_j^{n+1/2}=\frac{V_j^n+V_j^{n+1}}{2},\qquad V_t\approx\frac{V_j^{n+1}-V_j^n}{\Delta t}",
-    "greeks": r"\Delta=V_S,\qquad\Gamma=V_{SS},\qquad\Theta=V_t,\qquad\rho=V_r,\qquad\mathrm{Vega}=V_\sigma",
 }
 
 
@@ -234,7 +231,6 @@ FORMULA_KEYS = {
     "−U<sub>τ</sub>+(r−½σ²)U<sub>y</sub>+½σ²U<sub>yy</sub>=rU": "log_pde",
     "Vⱼ<super>n−1</super>=αⱼVⱼ₋₁ⁿ+βⱼVⱼⁿ+γⱼVⱼ₊₁ⁿ": "explicit",
     "αⱼVⱼ₋₁ⁿ+βⱼVⱼⁿ+γⱼVⱼ₊₁ⁿ=Vⱼ<super>n+1</super>": "implicit",
-    "O((Δt)²+(ΔS)²)": "cn_order",
 }
 
 
@@ -510,8 +506,6 @@ def back_columns(S):
         ("body", f"{equation('explicit_coeffs')}. {B('Vⱼ<super>n−1</super>=αⱼVⱼ₋₁ⁿ+βⱼVⱼⁿ+γⱼVⱼ₊₁ⁿ')}. Accuracy O(Δt+(ΔS)²) when stable.<br/>Sufficient stability: {equation('explicit_stability')}; then α,β,γ≥0 and |α|+|β|+|γ|≤1. Under this mesh relation overall order is O((ΔS)²)."),
         ("sub", "Forward Euler - IMPLICIT scheme"),
         ("body", f"{equation('implicit_coeffs')}. Solve tridiagonal {B('αⱼVⱼ₋₁ⁿ+βⱼVⱼⁿ+γⱼVⱼ₊₁ⁿ=Vⱼ<super>n+1</super>')} with boundary terms in RHS, backwards n=N<sub>t</sub>−1,…,0. Accuracy O(Δt+(ΔS)²); unconditionally stable. {R('σ²≥r is sufficient for strict diagonal dominance/nonsingularity, not necessary.')} Factor once if r,σ time-independent; total O(N<sub>t</sub>N<sub>S</sub>)."),
-        ("sub", "Crank-Nicolson - IMPLICIT scheme; Greeks"),
-        ("body", f"At t<sub>n+½</sub>: {equation('cn_average')}; use midpoint value in all S terms. Implicit; accuracy {B('O((Δt)²+(ΔS)²)')}.<br/>{equation('greeks')}."),
     ], S)
     return [c1, c2, c3, c4]
 
