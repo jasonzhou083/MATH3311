@@ -412,7 +412,11 @@ def front_columns(S):
         ("body", f"p=2: suited to independent N(0,σ²) errors with common variance. p=1: robust to outliers, {equation('lp_l1')}. p=∞: {equation('lp_linf')}. Linear r gives linear programs.<br/>Log-linearisation: products/exponentials/powers may be transformed. {R('Log transform requires every logged quantity positive and any shifted base t−βⱼ>0.')}"),
     ], S)
 
+    compact_S = styles(5.50)
     c3 = []
+    c3 += topic("3", "MATRIX RULES & EXAM TACTICS (CONT.)", [
+        ("body", f"{B('Det/eig:')} det(AB)=det(A)det(B), det(A<super>T</super>)=det(A), det(A<super>−1</super>)=1/det(A), det(A<super>k</super>)=det(A)<super>k</super>; A singular ⇔ det(A)=0. det(A−λI)=0; triangular λ<sub>i</sub>=a<sub>ii</sub>; det(A)=Πλ<sub>i</sub>, tr(A)=Σλ<sub>i</sub>; symmetric PD ⇔ λ<sub>min</sub>&gt;0.<br/>{B('Gram/solve:')} z<super>T</super>D<super>T</super>Dz=‖Dz‖₂²≥0; D<super>T</super>D PD ⇔ rank(D)=n. B<super>−1</super>Ax=b ⇒ Ax=Bb; for M<sub>1</sub>⋯M<sub>k</sub>x=b, solve the factors in order.<br/>{B('Q/P/powers/error:')} A=QR=(QS)(SR), S=diag(±1); PA permutes rows, AP columns. M<super>n</super>: binary repeated squaring O(log n). ρ<sub>A</sub>=0: ρ<sub>x</sub>≲κρ<sub>b</sub>; ρ<sub>A</sub>≈ρ<sub>b</sub>≈ε: ρ<sub>x</sub>≲2κε."),
+    ], compact_S)
     c3 += topic4
     topic5_blocks = [
         ("sub", "Polynomials and interpolation"),
