@@ -1,5 +1,6 @@
 import hashlib
 import io
+import os
 from pathlib import Path
 
 from PIL import Image
@@ -17,7 +18,10 @@ from pypdf import PdfReader, PdfWriter
 
 ROOT = Path(__file__).resolve().parents[2]
 TMP = ROOT / "tmp" / "pdfs"
-OUT = ROOT / "output" / "pdf" / "MATH3311_cheat_sheet_A4_front_back.pdf"
+DEFAULT_OUT = ROOT / "output" / "pdf" / "MATH3311_cheat_sheet_A4_front_back.pdf"
+BLACK_TEXT_OUT = ROOT / "output" / "pdf" / "MATH3311_cheat_sheet_A4_front_back_black_text.pdf"
+BLACK_TEXT = os.environ.get("MATH3311_BLACK_TEXT") == "1"
+OUT = BLACK_TEXT_OUT if BLACK_TEXT else DEFAULT_OUT
 
 FONT_DIR = Path("/System/Library/Fonts/Supplemental")
 DV_DIR = ROOT / "tmp" / "pdfs" / "vendor" / "matplotlib" / "mpl-data" / "fonts" / "ttf"
@@ -39,6 +43,14 @@ PALE_BLUE = colors.HexColor("#DDEEFF")
 PALE_TEAL = colors.HexColor("#DDF4EE")
 GRID = colors.HexColor("#AAB7C4")
 TEXT = colors.HexColor("#16212B")
+if BLACK_TEXT:
+    BLUE = TEAL = RED = PURPLE = GOLD = TEXT = colors.black
+
+HEADER_FILL = PALE_BLUE if BLACK_TEXT else NAVY
+HEADER_TEXT = colors.black if BLACK_TEXT else colors.white
+SECTION_FILL = PALE_BLUE if BLACK_TEXT else BLUE
+MATH_COLOR = "#000000" if BLACK_TEXT else "#0B5FA5"
+FOOTER_TEXT = colors.black if BLACK_TEXT else colors.HexColor("#52606D")
 
 MATH_DPI = 450
 MATH_FONT_SIZE = 6.35
@@ -245,7 +257,7 @@ def equation_asset(key: str):
     """Render a compact TeX-style equation and return its asset and dimensions."""
     MATH_DIR.mkdir(parents=True, exist_ok=True)
     tex = TEX[key]
-    math_color = "#0B5FA5"
+    math_color = MATH_COLOR
     asset_signature = f"{tex}|{math_color}|pad={MATH_PAD_TOP_PT},{MATH_PAD_BOTTOM_PT}"
     digest = hashlib.sha1(asset_signature.encode("utf-8")).hexdigest()[:16]
     path = MATH_DIR / f"{key}_{digest}.png"
@@ -334,8 +346,8 @@ def styles(font_size: float):
         fontName="Arial-Bold",
         fontSize=font_size + 1.45,
         leading=font_size + 2.25,
-        textColor=colors.white,
-        backColor=BLUE,
+        textColor=HEADER_TEXT,
+        backColor=SECTION_FILL,
         borderPadding=(1.2, 2.0, 1.1, 2.0),
         spaceBefore=1.5,
         spaceAfter=1.8,
@@ -525,9 +537,9 @@ def back_columns(S):
 
 def add_header(canvas, doc, side_label):
     canvas.saveState()
-    canvas.setFillColor(NAVY)
+    canvas.setFillColor(HEADER_FILL)
     canvas.rect(0, PAGE_H - 20.5, PAGE_W, 20.5, stroke=0, fill=1)
-    canvas.setFillColor(colors.white)
+    canvas.setFillColor(HEADER_TEXT)
     canvas.setFont("Arial-Bold", 10.2)
     canvas.drawString(MARGIN_X, PAGE_H - 14.2, "MATH3311 — NUMERICAL METHODS IN FINANCE")
     canvas.setFont("Arial-Italic", 6.0)
@@ -537,7 +549,7 @@ def add_header(canvas, doc, side_label):
     for i in range(1, COLS):
         x = MARGIN_X + i * COL_W + (i - 0.5) * GAP
         canvas.line(x, BOTTOM, x, PAGE_H - HEADER_H)
-    canvas.setFillColor(colors.HexColor("#52606D"))
+    canvas.setFillColor(FOOTER_TEXT)
     canvas.setFont("Arial", 4.7)
     canvas.drawString(MARGIN_X, 3.2, "Formula/definition sheet distilled only from Topics 1–11 lecture slides; conditions are highlighted in red italics.")
     canvas.drawRightString(PAGE_W - MARGIN_X, 3.2, side_label)

@@ -21,7 +21,7 @@ $$
 (AB)^T = B^T A^T.
 $$
 
-This rule applies when the product $AB$ is defined. If
+This rule applies when the product $AB$ is defined. I f
 $A \in \mathbb{R}^{m \times n}$ and $B \in \mathbb{R}^{n \times p}$, then
 $AB \in \mathbb{R}^{m \times p}$ and
 
